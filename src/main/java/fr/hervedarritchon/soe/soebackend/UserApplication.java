@@ -44,7 +44,7 @@ public class UserApplication {
 	 */
 	
 	public String createUser(User userToCreate) throws UserAlreadyExistException, InvalidParameterException {
-		checkUserValue(userToCreate);
+		checkUserValueAreValid(userToCreate);
 		if (dao.isUserExist(userToCreate)) {
 			throw new UserAlreadyExistException (userToCreate);
 		}
@@ -56,7 +56,7 @@ public class UserApplication {
 	 * @param userToCreate
 	 * @throws InvalidParameterException
 	 */
-	public void checkUserValue(User userToCreate)
+	public void checkUserValueAreValid(User userToCreate)
 			throws InvalidParameterException {
 		if (userToCreate.getFullName()==null || userToCreate.getFullName().isEmpty())
 		{

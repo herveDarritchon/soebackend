@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package fr.hervedarritchon.soe.soebackend.dao;
 
@@ -8,55 +8,61 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.hervedarritchon.soe.soebackend.model.User;
 
 /**
- * 
+ *
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
 public class StorageDao {
 
-	private Map<String, User> userStorage;
+	private static final Logger logger = LoggerFactory
+			.getLogger(StorageDao.class);
+
+	private final Map<String, User> userStorage;
 
 	/**
-	 * Constructor :
-	 * Instanciate the storage
-	 * 
+	 * Constructor : Instanciate the storage
+	 *
 	 */
 	public StorageDao() {
-		userStorage = new HashMap<String, User>();
+		this.userStorage = new HashMap<String, User>();
 	}
 
 	/**
 	 * Store a user in the Storage
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */
-	public String storeUser(User user) {
+	public String storeUser(final User user) {
 		final String id = UUID.randomUUID().toString();
 		user.setId(id);
-		userStorage.put(id, user);
+		this.userStorage.put(id, user);
 		return id;
 	}
-	
+
 	public void deleteAllUser() {
-		userStorage.clear();
+		logger.info("Nombre d'élément : {}", this.userStorage.size());
+		this.userStorage.clear();
 	}
 
-	public boolean isUserExist(User userToCreate) {
-		boolean isUnic=false;
-		
-		for(Entry<String, User> entry : userStorage.entrySet()) {
-		    //String key = entry.getKey();
-		    User value = entry.getValue();
-		    if (value.getEmailAddress().equals(userToCreate.getEmailAddress())){
-		    	isUnic= true;
-		    	break;
-		    }
+	public boolean isUserExist(final User userToCreate) {
+		boolean isUnic = false;
+
+		for (final Entry<String, User> entry : this.userStorage.entrySet()) {
+			// String key = entry.getKey();
+			final User value = entry.getValue();
+			if (value.getEmailAddress().equals(userToCreate.getEmailAddress())) {
+				isUnic = true;
+				break;
+			}
 		}
 		return isUnic;
 	}
-	
+
 }

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -33,14 +34,15 @@ public class UserApplicationTest {
 	private static final String PASSWORD = "password";
 
 	private User testUser;
-	private UserApplication application;
+	static private UserApplication application;
+
+	@BeforeClass
+	public static void init() {
+		application = new UserApplication();
+	}
 
 	@Before
-	public void setup() throws UserAlreadyExistException,
-			InvalidParameterException {
-		application = new UserApplication();
-		testUser = new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
-		application.createUser(testUser);
+	public void setup() {
 	}
 
 	@After
@@ -49,14 +51,22 @@ public class UserApplicationTest {
 	}
 
 	@Test
-	public void should_return_authenticated_when_a_valid_authentication() {
+	public void should_return_authenticated_when_a_valid_authentication()
+			throws UserAlreadyExistException, InvalidParameterException {
+		testUser = new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
+		application.createUser(testUser);
+
 		assertTrue("The user should be authenticated",
 				application.authenticateUserAgainstCredentials(testUser,
 						PASSWORD));
 	}
 
 	@Test
-	public void should_return_not_authenticated_when_an_ivalid_authentication() {
+	public void should_return_not_authenticated_when_an_ivalid_authentication()
+			throws UserAlreadyExistException, InvalidParameterException {
+		testUser = new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
+		application.createUser(testUser);
+
 		assertFalse("The user should be authenticated",
 				application.authenticateUserAgainstCredentials(testUser,
 						WRONG_PASSWORD));
@@ -78,6 +88,9 @@ public class UserApplicationTest {
 	@Test(expected = UserAlreadyExistException.class)
 	public void should_throw_exception_when_trying_to_create_existing_user()
 			throws UserAlreadyExistException, InvalidParameterException {
+		testUser = new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
+		application.createUser(testUser);
+		
 		User newUser = new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
 		String userId = application.createUser(newUser);
 
@@ -108,7 +121,6 @@ public class UserApplicationTest {
 		application.createUser(newUser);
 	}
 
-
 	@Test(expected = InvalidParameterException.class)
 	public void should_an_exception_when_creating_a_user_with_empty_fullname()
 			throws UserAlreadyExistException, InvalidParameterException {
@@ -129,7 +141,7 @@ public class UserApplicationTest {
 		User newUser = new User(FULL_NAME, EMAIL_ADDRESS, "");
 		application.createUser(newUser);
 	}
-	
+
 	@Test
 	public void should_update_profile_when_user_authenticated() {
 
