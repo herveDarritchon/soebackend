@@ -3,7 +3,7 @@
  */
 package fr.hervedarritchon.soe.soebackend;
 
-import fr.hervedarritchon.soe.soebackend.dao.UserDao;
+import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.exception.UserAlreadyExistException;
 import fr.hervedarritchon.soe.soebackend.model.User;
@@ -15,13 +15,13 @@ import fr.hervedarritchon.soe.soebackend.model.User;
  */
 public class UserApplication {
 
-	private UserDao dao;
+	private StorageDao dao;
 
 	
 	/**
 	 * @return the dao
 	 */
-	public UserDao getDao() {
+	public StorageDao getDao() {
 		return dao;
 	}
 
@@ -30,7 +30,7 @@ public class UserApplication {
 	 */
 	public UserApplication() {
 		super();
-		this.dao = new UserDao();
+		this.dao = new StorageDao();
 	}
 
 

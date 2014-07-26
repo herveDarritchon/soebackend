@@ -15,17 +15,17 @@ import fr.hervedarritchon.soe.soebackend.model.User;
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
-public class UserDao {
+public class StorageDao {
 
-	private Map<String, User> storage;
+	private Map<String, User> userStorage;
 
 	/**
 	 * Constructor :
 	 * Instanciate the storage
 	 * 
 	 */
-	public UserDao() {
-		storage = new HashMap<String, User>();
+	public StorageDao() {
+		userStorage = new HashMap<String, User>();
 	}
 
 	/**
@@ -37,18 +37,18 @@ public class UserDao {
 	public String storeUser(User user) {
 		final String id = UUID.randomUUID().toString();
 		user.setId(id);
-		storage.put(id, user);
+		userStorage.put(id, user);
 		return id;
 	}
 	
 	public void deleteAllUser() {
-		storage.clear();
+		userStorage.clear();
 	}
 
 	public boolean isUserExist(User userToCreate) {
 		boolean isUnic=false;
 		
-		for(Entry<String, User> entry : storage.entrySet()) {
+		for(Entry<String, User> entry : userStorage.entrySet()) {
 		    //String key = entry.getKey();
 		    User value = entry.getValue();
 		    if (value.getEmailAddress().equals(userToCreate.getEmailAddress())){
