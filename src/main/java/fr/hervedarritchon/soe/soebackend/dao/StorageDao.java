@@ -5,7 +5,6 @@ package fr.hervedarritchon.soe.soebackend.dao;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -39,11 +38,18 @@ public class StorageDao {
 	 * @param user
 	 * @return
 	 */
-	public String storeUser(final User user) {
+	public String storeNewUser(final User user) {
 		final String id = UUID.randomUUID().toString();
 		user.setId(id);
-		this.userStorage.put(id, user);
+		saveUser(user);
 		return id;
+	}
+
+	/**
+	 * @param user
+	 */
+	public void saveUser(final User user) {
+		this.userStorage.put(user.getEmailAddress(), user);
 	}
 
 	public void deleteAllUser() {
@@ -51,18 +57,12 @@ public class StorageDao {
 		this.userStorage.clear();
 	}
 
-	public boolean isUserExist(final User userToCreate) {
-		boolean isUnic = false;
+	public boolean isEmailAlreadyExisits(final String emailAddress) {
 
-		for (final Entry<String, User> entry : this.userStorage.entrySet()) {
-			// String key = entry.getKey();
-			final User value = entry.getValue();
-			if (value.getEmailAddress().equals(userToCreate.getEmailAddress())) {
-				isUnic = true;
-				break;
-			}
-		}
-		return isUnic;
+		return this.userStorage.containsKey(emailAddress);
 	}
 
+	public User getUserFromCredentials(final String credentials) {
+		return this.userStorage.get(credentials);
+	}
 }

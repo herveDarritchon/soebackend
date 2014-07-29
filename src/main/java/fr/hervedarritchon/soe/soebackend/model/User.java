@@ -1,11 +1,11 @@
 /**
- * 
+ *
  */
 package fr.hervedarritchon.soe.soebackend.model;
 
 /**
  * User Class Used to store data about the user.
- *  
+ *
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
@@ -25,14 +25,14 @@ public class User {
 	 * @return the id
 	 */
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	/**
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -40,14 +40,14 @@ public class User {
 	 * @return the fullName
 	 */
 	public String getFullName() {
-		return fullName;
+		return this.fullName;
 	}
 
 	/**
 	 * @param fullName
 	 *            the fullName to set
 	 */
-	public void setFullName(String fullName) {
+	public void setFullName(final String fullName) {
 		this.fullName = fullName;
 	}
 
@@ -55,14 +55,14 @@ public class User {
 	 * @return the emailAddress
 	 */
 	public String getEmailAddress() {
-		return emailAddress;
+		return this.emailAddress;
 	}
 
 	/**
 	 * @param emailAddress
 	 *            the emailAddress to set
 	 */
-	public void setEmailAddress(String emailAddress) {
+	public void setEmailAddress(final String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
 
@@ -70,14 +70,14 @@ public class User {
 	 * @return the password
 	 */
 	public String getPassword() {
-		return password;
+		return this.password;
 	}
 
 	/**
 	 * @param password
 	 *            the password to set
 	 */
-	public void setPassword(String password) {
+	public void setPassword(final String password) {
 		this.password = password;
 	}
 
@@ -85,14 +85,14 @@ public class User {
 	 * @return the authenticated
 	 */
 	public boolean isAuthenticated() {
-		return authenticated;
+		return this.authenticated;
 	}
 
 	/**
 	 * @param authenticated
 	 *            the authenticated to set
 	 */
-	public void setAuthenticated(boolean authenticated) {
+	public void setAuthenticated(final boolean authenticated) {
 		this.authenticated = authenticated;
 	}
 
@@ -101,7 +101,8 @@ public class User {
 	 * @param emailAddress
 	 * @param password
 	 */
-	public User(String fullName, String emailAddress, String password) {
+	public User(final String fullName, final String emailAddress,
+			final String password) {
 		super();
 		this.fullName = fullName;
 		this.emailAddress = emailAddress;

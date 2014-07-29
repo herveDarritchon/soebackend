@@ -1,80 +1,177 @@
 /**
- * 
+ *
  */
 package fr.hervedarritchon.soe.soebackend;
 
 import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
+import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
+import fr.hervedarritchon.soe.soebackend.exception.CannotCreateExceptionException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
+import fr.hervedarritchon.soe.soebackend.exception.UpdateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.UserAlreadyExistException;
 import fr.hervedarritchon.soe.soebackend.model.User;
 
 /**
- * 
+ *
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
 public class UserApplication {
 
-	private StorageDao dao;
+	private User user;
+	private final StorageDao dao;
 
-	
+	/**
+	 * @return the user
+	 */
+	public User getUser() {
+		return this.user;
+	}
+
+	/**
+	 * @param user
+	 *            the user to set
+	 */
+	public void setUser(final User user) {
+		this.user = user;
+	}
+
 	/**
 	 * @return the dao
 	 */
 	public StorageDao getDao() {
-		return dao;
+		return this.dao;
 	}
 
 	/**
 	 * @param dao
+	 * @param user
 	 */
-	public UserApplication() {
+	public UserApplication(final StorageDao dao, final User user) {
 		super();
-		this.dao = new StorageDao();
+		this.user = user;
+		this.dao = dao;
 	}
 
-
 	/**
+	 * Check that all the mandatory parameters passed are valid (not null and
+	 * not empty)
+	 *
 	 * @param fullName
 	 * @param emailAddress
 	 * @param password
-	 * @return 
-	 * @throws UserAlreadyExistException 
-	 * @throws InvalidParameterException 
-	 */
-	
-	public String createUser(User userToCreate) throws UserAlreadyExistException, InvalidParameterException {
-		checkUserValueAreValid(userToCreate);
-		if (dao.isUserExist(userToCreate)) {
-			throw new UserAlreadyExistException (userToCreate);
-		}
-		return dao.storeUser(userToCreate);
-	}
-
-
-	/**
-	 * @param userToCreate
 	 * @throws InvalidParameterException
 	 */
-	public void checkUserValueAreValid(User userToCreate)
-			throws InvalidParameterException {
-		if (userToCreate.getFullName()==null || userToCreate.getFullName().isEmpty())
-		{
+	public void checkUserValueAreValid(final String fullName,
+			final String emailAddress, final String password)
+					throws InvalidParameterException {
+		if ((fullName == null) || fullName.isEmpty()) {
 			throw new InvalidParameterException("Fullname");
 		}
-		if (userToCreate.getEmailAddress()==null || userToCreate.getEmailAddress().isEmpty() )
-		{
+		if ((emailAddress == null) || emailAddress.isEmpty()) {
 			throw new InvalidParameterException("EmailAdress");
 		}
-		if (userToCreate.getPassword()==null || userToCreate.getPassword().isEmpty())
-		{
+		if ((password == null) || password.isEmpty()) {
 			throw new InvalidParameterException("Password");
 		}
 	}
-	
-	public boolean authenticateUserAgainstCredentials (User user, String credentials) {
-		user.setAuthenticated(credentials.equals(user.getPassword()));
-		return user.isAuthenticated();
+
+	/**
+	 * Check the password of the user trying to authenticate against the ont
+	 * stored
+	 *
+	 * @param emailAddress
+	 * @param password
+	 * @return
+	 * @throws AuthenticateUserException
+	 */
+	public boolean authenticateUserAgainstCredentials(
+			final String emailAddress, final String password)
+			throws AuthenticateUserException {
+
+		if (this.user != null) {
+			throw new AuthenticateUserException("User already authenticated.");
+		}
+
+		final User userRetreive = this.dao.getUserFromCredentials(emailAddress);
+		boolean isAuthenticated = false;
+
+		if ((userRetreive != null)
+				&& userRetreive.getPassword().equals(password)) {
+			this.user = userRetreive;
+			isAuthenticated = true;
+		} else {
+			throw new AuthenticateUserException(
+					"User cannot be authenticated. Credentials are invalid.");
+		}
+
+		return (isAuthenticated);
+
 	}
-	
+
+	/**
+	 * This method creates a user from fullname,email and password if it doesn't
+	 * already exists.
+	 *
+	 * @param fullName
+	 * @param emailAddress
+	 * @param password
+	 * @return id : The unic id representing the database key.
+	 * @throws InvalidParameterException
+	 *             : if at least one parameter is either null or empty
+	 * @throws UserAlreadyExistException
+	 *             : if the email is already used by an another User
+	 * @throws CannotCreateExceptionException
+	 */
+	public String createUser(final String fullName, final String emailAddress,
+			final String password) throws InvalidParameterException,
+			CannotCreateExceptionException {
+
+		if (this.user != null) {
+			throw new CannotCreateExceptionException(
+					"User already connected and identify.");
+		}
+
+		this.checkUserValueAreValid(fullName, emailAddress, password);
+
+		if (this.dao.isEmailAlreadyExisits(emailAddress)) {
+			throw new CannotCreateExceptionException(
+					"User already exists with email address " + emailAddress);
+		}
+
+		this.user = new User(fullName, emailAddress, password);
+		this.user.setId(this.dao.storeNewUser(this.user));
+
+		return this.getUser().getId();
+	}
+
+	public void updateUser(final String fullName, final String emailAdress,
+			final String password) throws UpdateUserException,
+			InvalidParameterException {
+
+		if (this.user == null) {
+			throw new UpdateUserException(
+					"User not identified are not allowed to update User.");
+		}
+
+		this.checkUserValueAreValid(fullName, emailAdress, password);
+
+		if (!emailAdress.equals(this.user.getEmailAddress())) {
+			throw new UpdateUserException(
+					"User can't modify information about other User.");
+		}
+
+		final User retreiveUser = this.dao.getUserFromCredentials(emailAdress);
+
+		if (retreiveUser == null) {
+			throw new UpdateUserException(
+					"No User found in the database with these credentials.");
+		}
+
+		this.user.setFullName(fullName);
+		this.user.setPassword(password);
+
+		this.dao.saveUser(retreiveUser);
+
+	}
 }
