@@ -10,15 +10,17 @@ import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.exception.UpdateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.UserAlreadyExistException;
 import fr.hervedarritchon.soe.soebackend.model.User;
+import fr.hervedarritchon.soe.soebackend.model.UserDTO;
 
 /**
  *
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
-public class UserApplication {
+public class UserManager {
 
 	private User user;
+
 	private final StorageDao dao;
 
 	/**
@@ -47,10 +49,15 @@ public class UserApplication {
 	 * @param dao
 	 * @param user
 	 */
-	public UserApplication(final StorageDao dao, final User user) {
+	public UserManager(final StorageDao dao, final User user) {
 		super();
 		this.user = user;
 		this.dao = dao;
+	}
+
+	public UserManager() {
+		this.dao = new StorageDao();
+		this.user = null;
 	}
 
 	/**
@@ -85,27 +92,25 @@ public class UserApplication {
 	 * @return
 	 * @throws AuthenticateUserException
 	 */
-	public boolean authenticateUserAgainstCredentials(
-			final String emailAddress, final String password)
+	public User authenticateUserAgainstCredentials(final UserDTO userDto)
 			throws AuthenticateUserException {
 
 		if (this.user != null) {
 			throw new AuthenticateUserException("User already authenticated.");
 		}
 
-		final User userRetreive = this.dao.getUserFromCredentials(emailAddress);
-		boolean isAuthenticated = false;
+		final User userRetreive = this.dao.getUserFromCredentials(userDto
+				.getEmailAddress());
 
 		if ((userRetreive != null)
-				&& userRetreive.getPassword().equals(password)) {
+				&& userRetreive.getPassword().equals(userDto.getPassword())) {
 			this.user = userRetreive;
-			isAuthenticated = true;
 		} else {
 			throw new AuthenticateUserException(
 					"User cannot be authenticated. Credentials are invalid.");
 		}
 
-		return (isAuthenticated);
+		return (userRetreive);
 
 	}
 

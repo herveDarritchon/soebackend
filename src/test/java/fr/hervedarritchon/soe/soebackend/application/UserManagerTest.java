@@ -20,13 +20,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import fr.hervedarritchon.soe.soebackend.UserApplication;
+import fr.hervedarritchon.soe.soebackend.UserManager;
 import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
 import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.CannotCreateExceptionException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.exception.UpdateUserException;
 import fr.hervedarritchon.soe.soebackend.model.User;
+import fr.hervedarritchon.soe.soebackend.model.UserDTO;
 
 /**
  *
@@ -34,7 +35,7 @@ import fr.hervedarritchon.soe.soebackend.model.User;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class UserApplicationTest {
+public class UserManagerTest {
 
 	private static final String EMAIL_ADDRESS = "jonh.doe@jdoe-inc.com";
 	private static final String FULL_NAME = "Jonh Doe";
@@ -43,13 +44,12 @@ public class UserApplicationTest {
 	private static final User GUEST = null;
 
 	@Mock
-	private User mockedUser;
-
-	@Mock
 	private StorageDao mockedDao;
 
 	@InjectMocks
-	private UserApplication application;
+	private UserManager userManager;
+
+	private UserDTO userDto;
 
 	@BeforeClass
 	public static void init() {
@@ -57,12 +57,12 @@ public class UserApplicationTest {
 
 	@Before
 	public void setup() {
-		this.application = new UserApplication(this.mockedDao, GUEST);
+		this.userDto = new UserDTO(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
+		this.userManager = new UserManager(this.mockedDao, GUEST);
 	}
 
 	@After
 	public void tearDown() {
-		// application.getDao().deleteAllUser();
 	}
 
 	@Test
@@ -70,13 +70,13 @@ public class UserApplicationTest {
 			throws InvalidParameterException, CannotCreateExceptionException {
 
 		Mockito.when(this.mockedDao.isEmailAlreadyExisits(Mockito.anyString()))
-		.thenReturn(false);
+				.thenReturn(false);
 
 		final String generatedId = UUID.randomUUID().toString();
 		Mockito.when(this.mockedDao.storeNewUser(Mockito.any(User.class)))
-		.thenReturn(generatedId);
+				.thenReturn(generatedId);
 
-		final String id = this.application.createUser(FULL_NAME, EMAIL_ADDRESS,
+		final String id = this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS,
 				PASSWORD);
 
 		assertNotNull("Id not null", id);
@@ -95,9 +95,9 @@ public class UserApplicationTest {
 			throws CannotCreateExceptionException, InvalidParameterException {
 
 		Mockito.when(this.mockedDao.isEmailAlreadyExisits(Mockito.anyString()))
-				.thenReturn(true);
+		.thenReturn(true);
 
-		this.application.createUser(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
+		this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
 
 	}
 
@@ -105,9 +105,9 @@ public class UserApplicationTest {
 	public void should_throw_exception_when_existing_identified_user_trying_to_create_user()
 			throws CannotCreateExceptionException, InvalidParameterException {
 
-		this.application.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+		this.userManager.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
-		this.application.createUser(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
+		this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
 
 	}
 
@@ -115,52 +115,51 @@ public class UserApplicationTest {
 	public void should_throw_an_exception_when_creating_a_user_with_null_fullname()
 			throws CannotCreateExceptionException, InvalidParameterException {
 
-		this.application.createUser(null, EMAIL_ADDRESS, PASSWORD);
+		this.userManager.createUser(null, EMAIL_ADDRESS, PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_null_email_adress()
 			throws CannotCreateExceptionException, InvalidParameterException {
 
-		this.application.createUser(FULL_NAME, null, PASSWORD);
+		this.userManager.createUser(FULL_NAME, null, PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_null_password()
 			throws CannotCreateExceptionException, InvalidParameterException {
 
-		this.application.createUser(FULL_NAME, EMAIL_ADDRESS, null);
+		this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS, null);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_empty_fullname()
 			throws CannotCreateExceptionException, InvalidParameterException {
 
-		this.application.createUser("", EMAIL_ADDRESS, PASSWORD);
+		this.userManager.createUser("", EMAIL_ADDRESS, PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_empty_email_adress()
 			throws CannotCreateExceptionException, InvalidParameterException {
 
-		this.application.createUser(FULL_NAME, "", PASSWORD);
+		this.userManager.createUser(FULL_NAME, "", PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_empty_password()
 			throws CannotCreateExceptionException, InvalidParameterException {
 
-		this.application.createUser(FULL_NAME, EMAIL_ADDRESS, "");
+		this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS, "");
 	}
 
 	@Test(expected = AuthenticateUserException.class)
 	public void should_throw_exception_when_user_authenticated_try_to_authenticate()
 			throws AuthenticateUserException {
 
-		this.application.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+		this.userManager.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
-		this.application.authenticateUserAgainstCredentials(EMAIL_ADDRESS,
-				PASSWORD);
+		this.userManager.authenticateUserAgainstCredentials(this.userDto);
 
 	}
 
@@ -169,10 +168,10 @@ public class UserApplicationTest {
 			throws AuthenticateUserException {
 
 		Mockito.when(this.mockedDao.getUserFromCredentials(Mockito.anyString()))
-		.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+				.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
-		this.application.authenticateUserAgainstCredentials(EMAIL_ADDRESS,
-				WRONG_PASSWORD);
+		this.userManager.authenticateUserAgainstCredentials(new UserDTO(
+				FULL_NAME, EMAIL_ADDRESS, WRONG_PASSWORD));
 
 	}
 
@@ -181,10 +180,9 @@ public class UserApplicationTest {
 			throws AuthenticateUserException {
 
 		Mockito.when(this.mockedDao.getUserFromCredentials(Mockito.anyString()))
-		.thenReturn(null);
+				.thenReturn(null);
 
-		this.application.authenticateUserAgainstCredentials(EMAIL_ADDRESS,
-				PASSWORD);
+		this.userManager.authenticateUserAgainstCredentials(this.userDto);
 
 	}
 
@@ -193,36 +191,37 @@ public class UserApplicationTest {
 			throws AuthenticateUserException {
 
 		Mockito.when(this.mockedDao.getUserFromCredentials(Mockito.anyString()))
-		.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+				.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
-		assertTrue("User is correctly authenticated",
-				this.application.authenticateUserAgainstCredentials(
-						EMAIL_ADDRESS, PASSWORD));
+		assertTrue(
+				"User is correctly authenticated",
+				this.userManager
+						.authenticateUserAgainstCredentials(this.userDto) != null);
 		assertTrue("User is now authenticated and available",
-				this.application.getUser() != null);
+				this.userManager.getUser() != null);
 		assertEquals("User fullname is " + FULL_NAME, FULL_NAME,
-				this.application.getUser().getFullName());
+				this.userManager.getUser().getFullName());
 
 		Mockito.verify(this.mockedDao, Mockito.times(1))
-		.getUserFromCredentials(Mockito.anyString());
+				.getUserFromCredentials(Mockito.anyString());
 	}
 
 	@Test
 	public void should_update_user_data_when_user_gives_all_parameters()
 			throws UpdateUserException, InvalidParameterException {
 
-		this.application.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+		this.userManager.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
 		Mockito.when(this.mockedDao.getUserFromCredentials(Mockito.anyString()))
-		.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+				.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
-		this.application.updateUser("Leonard Cohen", EMAIL_ADDRESS,
+		this.userManager.updateUser("Leonard Cohen", EMAIL_ADDRESS,
 				"Partisan123");
 
 		assertEquals("User fullname is now Leonard Cohen", "Leonard Cohen",
-				this.application.getUser().getFullName());
+				this.userManager.getUser().getFullName());
 		assertEquals("User password is now Partisan123", "Partisan123",
-				this.application.getUser().getPassword());
+				this.userManager.getUser().getPassword());
 
 		Mockito.verify(this.mockedDao, Mockito.times(1)).saveUser(
 				Mockito.any(User.class));
@@ -233,7 +232,7 @@ public class UserApplicationTest {
 	public void should_throw_exception_when_guest_try_to_update_profile()
 			throws UpdateUserException, InvalidParameterException {
 
-		this.application.updateUser("Leonard Cohen", EMAIL_ADDRESS,
+		this.userManager.updateUser("Leonard Cohen", EMAIL_ADDRESS,
 				"Partisan123");
 
 	}
@@ -242,12 +241,12 @@ public class UserApplicationTest {
 	public void should_throw_exception_when_user_try_to_update_another_user()
 			throws UpdateUserException, InvalidParameterException {
 
-		this.application.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+		this.userManager.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
 		Mockito.when(this.mockedDao.getUserFromCredentials(Mockito.anyString()))
-		.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+				.thenReturn(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
-		this.application.updateUser("Leonard Cohen", "another.user@mail.com",
+		this.userManager.updateUser("Leonard Cohen", "another.user@mail.com",
 				"Partisan123");
 
 	}
@@ -256,12 +255,12 @@ public class UserApplicationTest {
 	public void should_throw_exception_when_user_gives_bad_credentials()
 			throws UpdateUserException, InvalidParameterException {
 
-		this.application.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
+		this.userManager.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
 		Mockito.when(this.mockedDao.getUserFromCredentials(Mockito.anyString()))
-		.thenReturn(null);
+				.thenReturn(null);
 
-		this.application.updateUser("Leonard Cohen", EMAIL_ADDRESS,
+		this.userManager.updateUser("Leonard Cohen", EMAIL_ADDRESS,
 				"Partisan123");
 
 	}

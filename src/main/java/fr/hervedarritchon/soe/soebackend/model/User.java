@@ -109,4 +109,11 @@ public class User {
 		this.password = password;
 	}
 
+	/**
+	 * Default constructeur. Nothing done.
+	 */
+	public User() {
+		this("", "", "");
+	}
+
 }

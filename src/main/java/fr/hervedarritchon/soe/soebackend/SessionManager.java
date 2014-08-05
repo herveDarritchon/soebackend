@@ -1,0 +1,88 @@
+package fr.hervedarritchon.soe.soebackend;
+
+import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
+import fr.hervedarritchon.soe.soebackend.exception.InvalidUserDtoException;
+import fr.hervedarritchon.soe.soebackend.model.SoeSession;
+import fr.hervedarritchon.soe.soebackend.model.User;
+import fr.hervedarritchon.soe.soebackend.model.UserDTO;
+
+public class SessionManager {
+
+	private SoeSession session;
+
+	private UserManager userManager;
+
+	/**
+	 * @return the session
+	 */
+	public SoeSession getSession() {
+		return this.session;
+	}
+
+	/**
+	 * @param session
+	 *            the session to set
+	 */
+	public void setSession(final SoeSession session) {
+		this.session = session;
+	}
+
+	/**
+	 * @return the userManager
+	 */
+	public UserManager getUserManager() {
+		return this.userManager;
+	}
+
+	/**
+	 * @param userManager
+	 *            the userManager to set
+	 */
+	public void setUserManager(final UserManager userManager) {
+		this.userManager = userManager;
+	}
+
+	/**
+	 *
+	 */
+	public SessionManager() {
+		super();
+	}
+
+	/* **************************** BUSINESS *************************** */
+
+	public SoeSession createSession(final UserDTO userDto)
+			throws AuthenticateUserException, InvalidUserDtoException {
+
+		if (userDto == null) {
+			throw new InvalidUserDtoException("UserDTO should not be null.");
+		}
+
+		if (this.session == null) {
+			final User user = this.userManager
+					.authenticateUserAgainstCredentials(userDto);
+			if (user != null) {
+				this.session = new SoeSession(user);
+			} else {
+				throw new InvalidUserDtoException("UserDTO unknown.");
+			}
+		}
+		return this.session;
+	}
+
+	public boolean deleteSession(final SoeSession currentSession) {
+		if (currentSession.equals(this.session)) {
+			this.session = null;
+		}
+		return (this.session == null);
+	}
+
+	public SoeSession retreiveSession() {
+		return this.session;
+	}
+
+	public SoeSession updateSession(final SoeSession currentSession) {
+		return null;
+	}
+
+}
