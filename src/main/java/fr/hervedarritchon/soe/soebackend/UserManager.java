@@ -3,6 +3,7 @@
  */
 package fr.hervedarritchon.soe.soebackend;
 
+import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
 import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
 import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.CannotCreateExceptionException;
@@ -10,7 +11,6 @@ import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.exception.UpdateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.UserAlreadyExistException;
 import fr.hervedarritchon.soe.soebackend.model.User;
-import fr.hervedarritchon.soe.soebackend.model.UserDTO;
 
 /**
  *

@@ -1,10 +1,10 @@
 package fr.hervedarritchon.soe.soebackend;
 
+import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
 import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidUserDtoException;
 import fr.hervedarritchon.soe.soebackend.model.SoeSession;
 import fr.hervedarritchon.soe.soebackend.model.User;
-import fr.hervedarritchon.soe.soebackend.model.UserDTO;
 
 public class SessionManager {
 

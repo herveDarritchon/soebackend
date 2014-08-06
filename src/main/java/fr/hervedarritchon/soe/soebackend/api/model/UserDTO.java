@@ -1,7 +1,7 @@
 /**
  *
  */
-package fr.hervedarritchon.soe.soebackend.model;
+package fr.hervedarritchon.soe.soebackend.api.model;
 
 /**
  * This class store information about the user received from the application
