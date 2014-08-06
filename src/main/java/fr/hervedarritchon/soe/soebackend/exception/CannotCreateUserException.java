@@ -7,9 +7,9 @@ package fr.hervedarritchon.soe.soebackend.exception;
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
-public class CannotCreateExceptionException extends Exception {
+public class CannotCreateUserException extends Exception {
 
-	public CannotCreateExceptionException(final String message) {
+	public CannotCreateUserException(final String message) {
 		super(message);
 	}
 

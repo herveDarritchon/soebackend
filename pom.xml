@@ -11,7 +11,7 @@
 		<slf4j.version>1.6.4</slf4j.version>
 		<logback.version>1.0.1</logback.version>
 		<jersey.version>2.11</jersey.version>
-		<spring.version>3.2.10.RELEASE</spring.version>
+		<spring.version>4.0.6.RELEASE</spring.version>
 	</properties>
 
 	<dependencies>

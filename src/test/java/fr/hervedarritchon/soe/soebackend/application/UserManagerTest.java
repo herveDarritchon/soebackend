@@ -24,7 +24,7 @@ import fr.hervedarritchon.soe.soebackend.UserManager;
 import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
 import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
 import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
-import fr.hervedarritchon.soe.soebackend.exception.CannotCreateExceptionException;
+import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.exception.UpdateUserException;
 import fr.hervedarritchon.soe.soebackend.model.User;
@@ -67,7 +67,7 @@ public class UserManagerTest {
 
 	@Test
 	public void should_create_a_user_when_guest_user_try_to_create_user()
-			throws InvalidParameterException, CannotCreateExceptionException {
+			throws InvalidParameterException, CannotCreateUserException {
 
 		Mockito.when(this.mockedDao.isEmailAlreadyExisits(Mockito.anyString()))
 				.thenReturn(false);
@@ -90,9 +90,9 @@ public class UserManagerTest {
 
 	}
 
-	@Test(expected = CannotCreateExceptionException.class)
+	@Test(expected = CannotCreateUserException.class)
 	public void should_throw_exception_when_guest_trying_to_create_user_that_already_exists()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		Mockito.when(this.mockedDao.isEmailAlreadyExisits(Mockito.anyString()))
 		.thenReturn(true);
@@ -101,9 +101,9 @@ public class UserManagerTest {
 
 	}
 
-	@Test(expected = CannotCreateExceptionException.class)
+	@Test(expected = CannotCreateUserException.class)
 	public void should_throw_exception_when_existing_identified_user_trying_to_create_user()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		this.userManager.setUser(new User(FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
@@ -113,42 +113,42 @@ public class UserManagerTest {
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_null_fullname()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		this.userManager.createUser(null, EMAIL_ADDRESS, PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_null_email_adress()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		this.userManager.createUser(FULL_NAME, null, PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_null_password()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS, null);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_empty_fullname()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		this.userManager.createUser("", EMAIL_ADDRESS, PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_empty_email_adress()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		this.userManager.createUser(FULL_NAME, "", PASSWORD);
 	}
 
 	@Test(expected = InvalidParameterException.class)
 	public void should_throw_an_exception_when_creating_a_user_with_empty_password()
-			throws CannotCreateExceptionException, InvalidParameterException {
+			throws CannotCreateUserException, InvalidParameterException {
 
 		this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS, "");
 	}

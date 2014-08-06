@@ -3,10 +3,12 @@
  */
 package fr.hervedarritchon.soe.soebackend;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
 import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
 import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
-import fr.hervedarritchon.soe.soebackend.exception.CannotCreateExceptionException;
+import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.exception.UpdateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.UserAlreadyExistException;
@@ -21,7 +23,8 @@ public class UserManager {
 
 	private User user;
 
-	private final StorageDao dao;
+	@Autowired
+	private StorageDao dao;
 
 	/**
 	 * @return the user
@@ -46,17 +49,15 @@ public class UserManager {
 	}
 
 	/**
-	 * @param dao
 	 * @param user
 	 */
-	public UserManager(final StorageDao dao, final User user) {
+	public UserManager(final User user) {
 		super();
 		this.user = user;
-		this.dao = dao;
 	}
 
 	public UserManager() {
-		this.dao = new StorageDao();
+		super();
 		this.user = null;
 	}
 
@@ -126,21 +127,21 @@ public class UserManager {
 	 *             : if at least one parameter is either null or empty
 	 * @throws UserAlreadyExistException
 	 *             : if the email is already used by an another User
-	 * @throws CannotCreateExceptionException
+	 * @throws CannotCreateUserException
 	 */
 	public String createUser(final String fullName, final String emailAddress,
 			final String password) throws InvalidParameterException,
-			CannotCreateExceptionException {
+			CannotCreateUserException {
 
 		if (this.user != null) {
-			throw new CannotCreateExceptionException(
+			throw new CannotCreateUserException(
 					"User already connected and identify.");
 		}
 
 		this.checkUserValueAreValid(fullName, emailAddress, password);
 
 		if (this.dao.isEmailAlreadyExisits(emailAddress)) {
-			throw new CannotCreateExceptionException(
+			throw new CannotCreateUserException(
 					"User already exists with email address " + emailAddress);
 		}
 
@@ -178,5 +179,24 @@ public class UserManager {
 
 		this.dao.saveUser(retreiveUser);
 
+	}
+
+	public User createUser(User newUser) throws InvalidParameterException, CannotCreateUserException {
+		if (this.user != null) {
+			throw new CannotCreateUserException(
+					"User already connected and identify.");
+		}
+
+		this.checkUserValueAreValid(newUser.getFullName(), newUser.getEmailAddress(), newUser.getPassword());
+
+		if (this.dao.isEmailAlreadyExisits(newUser.getEmailAddress())) {
+			throw new CannotCreateUserException(
+					"User already exists with email address " + newUser.getEmailAddress());
+		}
+
+		this.user = new User(newUser.getFullName(), newUser.getEmailAddress(), newUser.getPassword());
+		this.user.setId(this.dao.storeNewUser(this.user));
+
+		return this.getUser();		
 	}
 }
