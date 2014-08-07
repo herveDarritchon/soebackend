@@ -10,7 +10,7 @@ public class SessionManager {
 
 	private SoeSession session;
 
-	private UserManager userManager;
+	private UserService userManager;
 
 	/**
 	 * @return the session
@@ -30,7 +30,7 @@ public class SessionManager {
 	/**
 	 * @return the userManager
 	 */
-	public UserManager getUserManager() {
+	public UserService getUserManager() {
 		return this.userManager;
 	}
 
@@ -38,7 +38,7 @@ public class SessionManager {
 	 * @param userManager
 	 *            the userManager to set
 	 */
-	public void setUserManager(final UserManager userManager) {
+	public void setUserManager(final UserService userManager) {
 		this.userManager = userManager;
 	}
 

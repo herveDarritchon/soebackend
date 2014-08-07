@@ -3,9 +3,6 @@
  */
 package fr.hervedarritchon.soe.soebackend.api.model;
 
-import fr.hervedarritchon.soe.soebackend.UserManager;
-import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
-import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.model.User;
 
 /**
@@ -25,8 +22,39 @@ public class UserDTO {
 
 	private String password;
 
-	private UserManager manager;
+	/**
+	 * @param fullname
+	 * @param emailAddress
+	 * @param password
+	 */
+	public UserDTO(final String fullname, final String emailAddress,
+			final String password) {
+		super();
+		this.fullName = fullname;
+		this.emailAddress = emailAddress;
+		this.password = password;
+	}
 
+	/**
+	 *
+	 */
+	public UserDTO() {
+		super();
+	}
+
+	/**
+	 * Create a UserDTO from a User
+	 * 
+	 * @param user
+	 */
+	public UserDTO(User user) {
+		super();
+		this.id = user.getId();
+		this.fullName = user.getFullName();
+		this.emailAddress = user.getEmailAddress();
+		this.password = user.getPassword();
+	}
+	
 	/**
 	 * @return the id
 	 */
@@ -87,41 +115,4 @@ public class UserDTO {
 		this.password = password;
 	}
 
-	/**
-	 * @param fullname
-	 * @param emailAddress
-	 * @param password
-	 */
-	public UserDTO(final String fullname, final String emailAddress,
-			final String password) {
-		super();
-		this.fullName = fullname;
-		this.emailAddress = emailAddress;
-		this.password = password;
-	}
-
-	/**
-	 *
-	 */
-	public UserDTO() {
-		super();
-		manager = new UserManager();
-	}
-
-	public UserDTO createUser(UserDTO newUser)
-			throws InvalidParameterException, CannotCreateUserException {
-		User userToCreate = new User(newUser.getFullName(), newUser.getEmailAddress(),
-				newUser.getPassword());
-		userToCreate = manager.createUser(userToCreate);
-		return userToUserDTO(userToCreate);
-
-	}
-
-	private UserDTO userToUserDTO(User userToCreate) {
-		this.id = userToCreate.getId();
-		this.fullName = userToCreate.getFullName();
-		this.emailAddress = userToCreate.getEmailAddress();
-		this.password = userToCreate.getPassword();
-		return this;
-	}
 }

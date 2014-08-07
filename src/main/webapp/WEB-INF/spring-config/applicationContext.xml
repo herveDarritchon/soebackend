@@ -6,7 +6,9 @@
 
 	<context:component-scan base-package="fr.hervedarritchon.soe.soebackend" />
 
-	<bean id="storageDao" class="fr.hervedarritchon.soe.soebackend.dao.StorageDao">
-	</bean>
+
+	<!-- <bean id="storageDao" class="fr.hervedarritchon.soe.soebackend.dao.StorageDao"> 
+		</bean> <bean id="userService" class="fr.hervedarritchon.soe.soebackend.UserService" 
+		scope="prototype"> <property name="dao" ref="storageDao" /> </bean> -->
 
 </beans>

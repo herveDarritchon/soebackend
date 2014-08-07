@@ -36,7 +36,7 @@ public class SessionManagerTest {
 	private static final UserDTO GUEST = null;
 
 	@Mock
-	private UserManager mockedUserManager;
+	private UserService mockedUserManager;
 
 	@InjectMocks
 	private SessionManager session;

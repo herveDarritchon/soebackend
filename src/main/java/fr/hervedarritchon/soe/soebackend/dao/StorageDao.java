@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import fr.hervedarritchon.soe.soebackend.model.User;
 
@@ -17,6 +18,7 @@ import fr.hervedarritchon.soe.soebackend.model.User;
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
+@Repository
 public class StorageDao {
 
 	private static final Logger logger = LoggerFactory

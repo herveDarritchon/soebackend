@@ -15,12 +15,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import fr.hervedarritchon.soe.soebackend.UserManager;
+import fr.hervedarritchon.soe.soebackend.UserService;
 import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
 import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
 import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
@@ -35,10 +34,10 @@ import fr.hervedarritchon.soe.soebackend.model.User;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class UserManagerTest {
+public class UserServiceTest {
 
 	private static final String EMAIL_ADDRESS = "jonh.doe@jdoe-inc.com";
-	private static final String FULL_NAME = "Jonh Doe";
+	private static final String FULL_NAME = "John Doe";
 	private static final String WRONG_PASSWORD = "wrong";
 	private static final String PASSWORD = "password";
 	private static final User GUEST = null;
@@ -46,8 +45,7 @@ public class UserManagerTest {
 	@Mock
 	private StorageDao mockedDao;
 
-	@InjectMocks
-	private UserManager userManager;
+	private UserService userManager;
 
 	private UserDTO userDto;
 
@@ -58,7 +56,7 @@ public class UserManagerTest {
 	@Before
 	public void setup() {
 		this.userDto = new UserDTO(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
-		this.userManager = new UserManager(this.mockedDao, GUEST);
+		userManager = new UserService(mockedDao);
 	}
 
 	@After
@@ -95,7 +93,7 @@ public class UserManagerTest {
 			throws CannotCreateUserException, InvalidParameterException {
 
 		Mockito.when(this.mockedDao.isEmailAlreadyExisits(Mockito.anyString()))
-		.thenReturn(true);
+				.thenReturn(true);
 
 		this.userManager.createUser(FULL_NAME, EMAIL_ADDRESS, PASSWORD);
 

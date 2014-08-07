@@ -18,7 +18,10 @@ import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import fr.hervedarritchon.soe.soebackend.UserService;
 import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
 import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
@@ -27,35 +30,43 @@ import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
  * @author ahdi7503
  *
  */
-@Path ("/users")
+@Path("/users")
+@Component
 public class UserResource {
 
-	 private static final Logger LOGGER = LoggerFactory
-				.getLogger(UserResource.class);
-	 
-	 @Context
-	 private UriInfo uriInfo;
-	 
-	  public UserResource() {
-	        LOGGER.info("UserResource()");
-	    }
-	  
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(UserResource.class);
+
+	private UserService userService;
+
+	@Context
+	private UriInfo uriInfo;
+
+	@Autowired
+	public UserResource(UserService userService) {
+		this.userService = userService;
+		LOGGER.info("UserResource() with {} as a UserService",
+				userService.toString());
+	}
+
 	/**
 	 * Method handling HTTP GET requests. The returned object will be sent to
 	 * the client as "text/plain" media type.
 	 *
 	 * @return String that will be returned as a text/plain response.
-	 * @throws CannotCreateUserException 
-	 * @throws InvalidParameterException 
+	 * @throws CannotCreateUserException
+	 * @throws InvalidParameterException
 	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response signUp(UserDTO newUser) throws InvalidParameterException, CannotCreateUserException {
-		
-		newUser = newUser.createUser (newUser);
- 
-		URI location = uriInfo.getAbsolutePathBuilder().path(newUser.getId()).build();
- 
+	public Response signUp(UserDTO newUserDTO)
+			throws InvalidParameterException, CannotCreateUserException {
+
+		newUserDTO = userService.createUser(newUserDTO);
+
+		URI location = uriInfo.getAbsolutePathBuilder()
+				.path(newUserDTO.getId()).build();
+
 		return Response.created(location).build();
 	}
 
@@ -70,7 +81,7 @@ public class UserResource {
 	public String unsubscribe(UserDTO toDeleteUser) {
 		return "Erf, you want to quit !";
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -80,7 +91,7 @@ public class UserResource {
 	public String signIn(String idSignInUser) {
 		return "Hey, Welcome back !";
 	}
-	
+
 	/**
 	 * Method handling HTTP GET requests. The returned object will be sent to
 	 * the client as "text/plain" media type.
@@ -92,5 +103,5 @@ public class UserResource {
 	public String updatePofile(UserDTO updateUser) {
 		return "Hey, What's up !";
 	}
-	
+
 }
