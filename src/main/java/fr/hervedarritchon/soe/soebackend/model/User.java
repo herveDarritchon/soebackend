@@ -4,6 +4,7 @@
 package fr.hervedarritchon.soe.soebackend.model;
 
 import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
+import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 
 /**
  * User Class Used to store data about the user.
@@ -111,15 +112,24 @@ public class User {
 		this.password = password;
 	}
 
-	/**
-	 * Default constructeur. Nothing done.
-	 */
-	public User() {
-		this("", "", "");
-	}
-
-	public User(UserDTO userDTO) {
-		this (userDTO.getFullName(),userDTO.getEmailAddress(),userDTO.getPassword());
+	public User(UserDTO userDTO) throws InvalidParameterException {
+		super();
+		
+		if (( userDTO.getFullName()== null) || userDTO.getFullName().isEmpty()) {
+			throw new InvalidParameterException("Fullname");
+		} else {
+			this.fullName = userDTO.getFullName();
+		}
+		if ((userDTO.getEmailAddress() == null) || userDTO.getEmailAddress().isEmpty()) {
+			throw new InvalidParameterException("EmailAdress");
+		} else {
+			this.emailAddress= userDTO.getEmailAddress();
+		}
+		if ((userDTO.getPassword() == null) || userDTO.getPassword().isEmpty()) {
+			throw new InvalidParameterException("Password");
+		} else {
+			this.password = userDTO.getPassword();
+		}
 	}
 
 }

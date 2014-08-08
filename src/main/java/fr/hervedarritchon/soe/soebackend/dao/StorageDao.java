@@ -64,7 +64,7 @@ public class StorageDao {
 		return this.userStorage.containsKey(userToTest.getEmailAddress());
 	}
 
-	public User getUserFromCredentials(final String credentials) {
-		return this.userStorage.get(credentials);
+	public User getUserFromCredentials(final User userToAuthenticate) {
+		return this.userStorage.get(userToAuthenticate.getEmailAddress());
 	}
 }

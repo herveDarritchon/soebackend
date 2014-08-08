@@ -22,8 +22,6 @@ import fr.hervedarritchon.soe.soebackend.model.User;
 @Service
 public class UserService {
 
-	private User user;
-
 	private StorageDao dao;
 
 	public UserService() {
@@ -33,7 +31,6 @@ public class UserService {
 	@Autowired
 	public UserService(StorageDao dao) {
 		super();
-		this.user = null;
 		this.dao = dao;
 	}
 
@@ -68,21 +65,19 @@ public class UserService {
 	 * @param password
 	 * @return
 	 * @throws AuthenticateUserException
+	 * @throws InvalidParameterException 
 	 */
 	public User authenticateUserAgainstCredentials(final UserDTO userDto)
-			throws AuthenticateUserException {
+			throws AuthenticateUserException, InvalidParameterException {
 
-		if (this.user != null) {
-			throw new AuthenticateUserException("User already authenticated.");
-		}
+//		if (this.user != null) {
+//			throw new AuthenticateUserException("User already authenticated.");
+//		}
 
-		final User userRetreive = this.dao.getUserFromCredentials(userDto
-				.getEmailAddress());
+		final User userRetreive = this.dao.getUserFromCredentials(new User(userDto));
 
-		if ((userRetreive != null)
-				&& userRetreive.getPassword().equals(userDto.getPassword())) {
-			this.user = userRetreive;
-		} else {
+		if ((userRetreive == null)
+				|| userRetreive.getPassword().equals(userDto.getPassword())) {
 			throw new AuthenticateUserException(
 					"User cannot be authenticated. Credentials are invalid.");
 		}
@@ -100,20 +95,19 @@ public class UserService {
 	 * @throws UpdateUserException
 	 * @throws InvalidParameterException
 	 */
-	public void updateUser(final String fullName, final String emailAdress,
-			final String password) throws UpdateUserException,
+	public void updateUser(UserDTO userToUpdateDTO) throws UpdateUserException,
 			InvalidParameterException {
 
-		if (this.user == null) {
-			throw new UpdateUserException(
-					"User not identified are not allowed to update User.");
-		}
+//		if (this.user == null) {
+//			throw new UpdateUserException(
+//					"User not identified are not allowed to update User.");
+//		}
 
-		this.checkUserValueAreValid(fullName, emailAdress, password);
-
+		User userToUpdate = new User(userToUpdateDTO);
+		
 		if (!emailAdress.equals(this.user.getEmailAddress())) {
 			throw new UpdateUserException(
-					"User can't modify information about other User.");
+					"User can't modify information about another User.");
 		}
 
 		final User retreiveUser = this.dao.getUserFromCredentials(emailAdress);
@@ -140,12 +134,12 @@ public class UserService {
 	 */
 	public UserDTO createUser(UserDTO newUserDTO)
 			throws InvalidParameterException, CannotCreateUserException {
-		if (this.user != null) {
-			throw new CannotCreateUserException(
-					"User already connected and identify.");
-		}
+//		if (this.user != null) {
+//			throw new CannotCreateUserException(
+//					"User already connected and identify.");
+//		}
 
-		User newUser = this.checkUserValueAreValid(newUserDTO);
+		User newUser = new User(newUserDTO);
 
 		if (this.dao.isUserAlreadyExists(newUser)) {
 			throw new CannotCreateUserException(
@@ -158,20 +152,7 @@ public class UserService {
 		return userToUserDTO(newUser);
 	}
 
-	private User checkUserValueAreValid(UserDTO userDTO) throws InvalidParameterException {
-		if (( userDTO.getFullName()== null) || userDTO.getFullName().isEmpty()) {
-			throw new InvalidParameterException("Fullname");
-		}
-		if ((userDTO.getEmailAddress() == null) || userDTO.getEmailAddress().isEmpty()) {
-			throw new InvalidParameterException("EmailAdress");
-		}
-		if ((userDTO.getPassword() == null) || userDTO.getPassword().isEmpty()) {
-			throw new InvalidParameterException("Password");
-		}
-		return new User(userDTO);
-	}
-
-	/**
+		/**
 	 * Transform a User to a UserDTO
 	 * 
 	 * @param userToCreate
@@ -179,21 +160,6 @@ public class UserService {
 	 */
 	private UserDTO userToUserDTO(User userToCreate) {
 		return new UserDTO(userToCreate);
-	}
-
-	/**
-	 * @return the user
-	 */
-	public User getUser() {
-		return user;
-	}
-
-	/**
-	 * @param user
-	 *            the user to set
-	 */
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	/**
