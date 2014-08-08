@@ -59,9 +59,9 @@ public class StorageDao {
 		this.userStorage.clear();
 	}
 
-	public boolean isEmailAlreadyExisits(final String emailAddress) {
+	public boolean isUserAlreadyExists(final User userToTest) {
 
-		return this.userStorage.containsKey(emailAddress);
+		return this.userStorage.containsKey(userToTest.getEmailAddress());
 	}
 
 	public User getUserFromCredentials(final String credentials) {

@@ -3,6 +3,8 @@
  */
 package fr.hervedarritchon.soe.soebackend.model;
 
+import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
+
 /**
  * User Class Used to store data about the user.
  *
@@ -114,6 +116,10 @@ public class User {
 	 */
 	public User() {
 		this("", "", "");
+	}
+
+	public User(UserDTO userDTO) {
+		this (userDTO.getFullName(),userDTO.getEmailAddress(),userDTO.getPassword());
 	}
 
 }

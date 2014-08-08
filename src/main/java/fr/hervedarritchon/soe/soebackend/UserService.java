@@ -12,7 +12,6 @@ import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 import fr.hervedarritchon.soe.soebackend.exception.UpdateUserException;
-import fr.hervedarritchon.soe.soebackend.exception.UserAlreadyExistException;
 import fr.hervedarritchon.soe.soebackend.model.User;
 
 /**
@@ -93,42 +92,6 @@ public class UserService {
 	}
 
 	/**
-	 * This method creates a user from fullname,email and password if it doesn't
-	 * already exists.
-	 *
-	 * @param fullName
-	 * @param emailAddress
-	 * @param password
-	 * @return id : The unic id representing the database key.
-	 * @throws InvalidParameterException
-	 *             : if at least one parameter is either null or empty
-	 * @throws UserAlreadyExistException
-	 *             : if the email is already used by an another User
-	 * @throws CannotCreateUserException
-	 */
-	public String createUser(final String fullName, final String emailAddress,
-			final String password) throws InvalidParameterException,
-			CannotCreateUserException {
-
-		if (this.user != null) {
-			throw new CannotCreateUserException(
-					"User already connected and identify.");
-		}
-
-		this.checkUserValueAreValid(fullName, emailAddress, password);
-
-		if (this.dao.isEmailAlreadyExisits(emailAddress)) {
-			throw new CannotCreateUserException(
-					"User already exists with email address " + emailAddress);
-		}
-
-		this.user = new User(fullName, emailAddress, password);
-		this.user.setId(this.dao.storeNewUser(this.user));
-
-		return this.getUser().getId();
-	}
-
-	/**
 	 * Update a User
 	 * 
 	 * @param fullName
@@ -170,32 +133,42 @@ public class UserService {
 	/**
 	 * Create a User
 	 * 
-	 * @param newUser
+	 * @param newUserDTO
 	 * @return
 	 * @throws InvalidParameterException
 	 * @throws CannotCreateUserException
 	 */
-	public UserDTO createUser(UserDTO newUser)
+	public UserDTO createUser(UserDTO newUserDTO)
 			throws InvalidParameterException, CannotCreateUserException {
 		if (this.user != null) {
 			throw new CannotCreateUserException(
 					"User already connected and identify.");
 		}
 
-		this.checkUserValueAreValid(newUser.getFullName(),
-				newUser.getEmailAddress(), newUser.getPassword());
+		User newUser = this.checkUserValueAreValid(newUserDTO);
 
-		if (this.dao.isEmailAlreadyExisits(newUser.getEmailAddress())) {
+		if (this.dao.isUserAlreadyExists(newUser)) {
 			throw new CannotCreateUserException(
 					"User already exists with email address "
 							+ newUser.getEmailAddress());
 		}
 
-		this.user = new User(newUser.getFullName(), newUser.getEmailAddress(),
-				newUser.getPassword());
-		this.user.setId(this.dao.storeNewUser(this.user));
+		newUser.setId(this.dao.storeNewUser(newUser));
 
-		return userToUserDTO(this.getUser());
+		return userToUserDTO(newUser);
+	}
+
+	private User checkUserValueAreValid(UserDTO userDTO) throws InvalidParameterException {
+		if (( userDTO.getFullName()== null) || userDTO.getFullName().isEmpty()) {
+			throw new InvalidParameterException("Fullname");
+		}
+		if ((userDTO.getEmailAddress() == null) || userDTO.getEmailAddress().isEmpty()) {
+			throw new InvalidParameterException("EmailAdress");
+		}
+		if ((userDTO.getPassword() == null) || userDTO.getPassword().isEmpty()) {
+			throw new InvalidParameterException("Password");
+		}
+		return new User(userDTO);
 	}
 
 	/**
