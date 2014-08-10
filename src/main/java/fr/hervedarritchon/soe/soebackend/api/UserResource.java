@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fr.hervedarritchon.soe.soebackend.UserService;
-import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
+import fr.hervedarritchon.soe.soebackend.api.model.UserDto;
 import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
 
@@ -59,13 +59,13 @@ public class UserResource {
 	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response signUp(UserDTO newUserDTO)
+	public Response signUp(UserDto userToCreate)
 			throws InvalidParameterException, CannotCreateUserException {
 
-		newUserDTO = userService.createUser(newUserDTO);
+		userToCreate = userService.createUser(userToCreate);
 
 		URI location = uriInfo.getAbsolutePathBuilder()
-				.path(newUserDTO.getId()).build();
+				.path(userToCreate.getId()).build();
 
 		return Response.created(location).build();
 	}
@@ -78,7 +78,7 @@ public class UserResource {
 	 */
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN)
-	public String unsubscribe(UserDTO toDeleteUser) {
+	public String unsubscribe(UserDto toDeleteUser) {
 		return "Erf, you want to quit !";
 	}
 
@@ -100,7 +100,7 @@ public class UserResource {
 	 */
 	@PUT
 	@Produces(MediaType.TEXT_PLAIN)
-	public String updatePofile(UserDTO updateUser) {
+	public String updatePofile(UserDto updateUser) {
 		return "Hey, What's up !";
 	}
 
