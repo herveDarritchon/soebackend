@@ -6,7 +6,7 @@ package fr.hervedarritchon.soe.soebackend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.hervedarritchon.soe.soebackend.api.model.UserDTO;
+import fr.hervedarritchon.soe.soebackend.api.model.UserDto;
 import fr.hervedarritchon.soe.soebackend.dao.StorageDao;
 import fr.hervedarritchon.soe.soebackend.exception.AuthenticateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
@@ -29,33 +29,36 @@ public class UserService {
 	}
 
 	@Autowired
-	public UserService(StorageDao dao) {
+	public UserService(final StorageDao dao) {
 		super();
 		this.dao = dao;
 	}
 
-	/**
-	 * Check that all the mandatory parameters passed are valid (not null and
-	 * not empty)
-	 *
-	 * @param fullName
-	 * @param emailAddress
-	 * @param password
-	 * @throws InvalidParameterException
-	 */
-	public void checkUserValueAreValid(final String fullName,
-			final String emailAddress, final String password)
-			throws InvalidParameterException {
-		if ((fullName == null) || fullName.isEmpty()) {
-			throw new InvalidParameterException("Fullname");
-		}
-		if ((emailAddress == null) || emailAddress.isEmpty()) {
-			throw new InvalidParameterException("EmailAdress");
-		}
-		if ((password == null) || password.isEmpty()) {
-			throw new InvalidParameterException("Password");
-		}
-	}
+	// /**
+	// * Check that all the mandatory parameters passed are valid (not null and
+	// * not empty)
+	// *
+	// * @param fullName
+	// * @param emailAddress
+	// * @param password
+	// * @throws InvalidParameterException
+	// */
+	// public User checkUserValueAreValid(final UserDTO userToCheck)
+	// throws InvalidParameterException {
+	// if ((userToCheck.getFullName() == null)
+	// || userToCheck.getFullName().isEmpty()) {
+	// throw new InvalidParameterException("Fullname");
+	// }
+	// if ((userToCheck.getEmailAddress() == null)
+	// || userToCheck.getEmailAddress().isEmpty()) {
+	// throw new InvalidParameterException("EmailAdress");
+	// }
+	// if ((userToCheck.getPassword() == null)
+	// || userToCheck.getPassword().isEmpty()) {
+	// throw new InvalidParameterException("Password");
+	// }
+	// return new User(userToCheck);
+	// }
 
 	/**
 	 * Check the password of the user trying to authenticate against the ont
@@ -65,16 +68,17 @@ public class UserService {
 	 * @param password
 	 * @return
 	 * @throws AuthenticateUserException
-	 * @throws InvalidParameterException 
+	 * @throws InvalidParameterException
 	 */
-	public User authenticateUserAgainstCredentials(final UserDTO userDto)
+	public User authenticateUserAgainstCredentials(final UserDto userDto)
 			throws AuthenticateUserException, InvalidParameterException {
 
-//		if (this.user != null) {
-//			throw new AuthenticateUserException("User already authenticated.");
-//		}
+		// if (this.user != null) {
+		// throw new AuthenticateUserException("User already authenticated.");
+		// }
 
-		final User userRetreive = this.dao.getUserFromCredentials(new User(userDto));
+		final User userRetreive = this.dao.getUserFromCredentials(new User(
+				userDto));
 
 		if ((userRetreive == null)
 				|| userRetreive.getPassword().equals(userDto.getPassword())) {
@@ -88,92 +92,91 @@ public class UserService {
 
 	/**
 	 * Update a User
-	 * 
+	 *
 	 * @param fullName
 	 * @param emailAdress
 	 * @param password
 	 * @throws UpdateUserException
 	 * @throws InvalidParameterException
 	 */
-	public void updateUser(UserDTO userToUpdateDTO) throws UpdateUserException,
-			InvalidParameterException {
+	public void updateUser(final UserDto userToUpdateDTO)
+			throws UpdateUserException, InvalidParameterException {
 
-//		if (this.user == null) {
-//			throw new UpdateUserException(
-//					"User not identified are not allowed to update User.");
-//		}
+		// if (this.user == null) {
+		// throw new UpdateUserException(
+		// "User not identified are not allowed to update User.");
+		// }
 
-		User userToUpdate = new User(userToUpdateDTO);
-		
-		if (!emailAdress.equals(this.user.getEmailAddress())) {
-			throw new UpdateUserException(
-					"User can't modify information about another User.");
-		}
+		final User userToUpdate = new User(userToUpdateDTO);
 
-		final User retreiveUser = this.dao.getUserFromCredentials(emailAdress);
+		// if (!userToUpdateDTO.getEmailAddress().equals(
+		// userToUpdate.getEmailAddress())) {
+		// throw new UpdateUserException(
+		// "User can't modify information about another User.");
+		// }
+
+		final User retreiveUser = this.dao.getUserFromCredentials(new User(
+				userToUpdateDTO));
 
 		if (retreiveUser == null) {
 			throw new UpdateUserException(
 					"No User found in the database with these credentials.");
 		}
 
-		this.user.setFullName(fullName);
-		this.user.setPassword(password);
-
-		this.dao.saveUser(retreiveUser);
+		this.dao.updateUser(userToUpdate);
 
 	}
 
 	/**
 	 * Create a User
-	 * 
-	 * @param newUserDTO
+	 *
+	 * @param userToCreateDTO
 	 * @return
 	 * @throws InvalidParameterException
 	 * @throws CannotCreateUserException
 	 */
-	public UserDTO createUser(UserDTO newUserDTO)
+	public UserDto createUser(final UserDto userToCreateDTO)
 			throws InvalidParameterException, CannotCreateUserException {
-//		if (this.user != null) {
-//			throw new CannotCreateUserException(
-//					"User already connected and identify.");
-//		}
+		// if (this.user != null) {
+		// throw new CannotCreateUserException(
+		// "User already connected and identify.");
+		// }
 
-		User newUser = new User(newUserDTO);
+		final User userToCreate = new User(userToCreateDTO);
 
-		if (this.dao.isUserAlreadyExists(newUser)) {
+		if (this.dao.isUserAlreadyExists(userToCreate)) {
 			throw new CannotCreateUserException(
 					"User already exists with email address "
-							+ newUser.getEmailAddress());
+							+ userToCreate.getEmailAddress());
 		}
 
-		newUser.setId(this.dao.storeNewUser(newUser));
+		userToCreate.setId(this.dao.storeNewUser(userToCreate));
 
-		return userToUserDTO(newUser);
+		return this.userToUserDTO(userToCreate);
 	}
 
-		/**
+	/**
 	 * Transform a User to a UserDTO
-	 * 
+	 *
 	 * @param userToCreate
 	 * @return
 	 */
-	private UserDTO userToUserDTO(User userToCreate) {
-		return new UserDTO(userToCreate);
+	private UserDto userToUserDTO(final User userToCreate) {
+		return new UserDto(userToCreate);
 	}
 
 	/**
 	 * @return the dao
 	 */
 	public StorageDao getDao() {
-		return dao;
+		return this.dao;
 	}
 
 	/**
 	 * @param dao
 	 *            the dao to set
 	 */
-	public void setDao(StorageDao dao) {
+	public void setDao(final StorageDao dao) {
 		this.dao = dao;
 	}
 }

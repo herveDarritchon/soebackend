@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import fr.hervedarritchon.soe.soebackend.dao.model.UserDao;
 import fr.hervedarritchon.soe.soebackend.model.User;
 
 /**
@@ -24,34 +25,34 @@ public class StorageDao {
 	private static final Logger logger = LoggerFactory
 			.getLogger(StorageDao.class);
 
-	private final Map<String, User> userStorage;
+	private final Map<String, UserDao> userStorage;
 
 	/**
 	 * Constructor : Instanciate the storage
 	 *
 	 */
 	public StorageDao() {
-		this.userStorage = new HashMap<String, User>();
+		this.userStorage = new HashMap<String, UserDao>();
 	}
 
 	/**
 	 * Store a user in the Storage
 	 *
-	 * @param user
+	 * @param userToStore
 	 * @return
 	 */
-	public String storeNewUser(final User user) {
-		final String id = UUID.randomUUID().toString();
-		user.setId(id);
-		saveUser(user);
-		return id;
+	public String storeNewUser(final User userToStore) {
+		final UserDao userDaoToStore = new UserDao(userToStore);
+		userDaoToStore.setId(UUID.randomUUID().toString());
+		this.saveUser(userDaoToStore);
+		return userDaoToStore.getId();
 	}
 
 	/**
-	 * @param user
+	 * @param userToSave
 	 */
-	public void saveUser(final User user) {
-		this.userStorage.put(user.getEmailAddress(), user);
+	public void saveUser(final UserDao userToSave) {
+		this.userStorage.put(userToSave.getEmailAddress(), userToSave);
 	}
 
 	public void deleteAllUser() {
@@ -65,6 +66,17 @@ public class StorageDao {
 	}
 
 	public User getUserFromCredentials(final User userToAuthenticate) {
-		return this.userStorage.get(userToAuthenticate.getEmailAddress());
+		final UserDao userDaoRetreived = this.userStorage
+				.get(userToAuthenticate.getEmailAddress());
+		return new User(userDaoRetreived.getId(),
+				userDaoRetreived.getFullName(),
+				userDaoRetreived.getEmailAddress(),
+				userDaoRetreived.getPassword());
+	}
+
+	public void updateUser(final User userToUpdate) {
+		final UserDao userDaoToUpdate = new UserDao(userToUpdate);
+		// userDaoToUpdate.setId(UUID.randomUUID().toString());
+		this.saveUser(userDaoToUpdate);
 	}
 }

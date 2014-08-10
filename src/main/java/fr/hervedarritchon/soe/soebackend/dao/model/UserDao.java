@@ -1,18 +1,15 @@
 /**
  *
  */
-package fr.hervedarritchon.soe.soebackend.api.model;
+package fr.hervedarritchon.soe.soebackend.dao.model;
 
 import fr.hervedarritchon.soe.soebackend.model.User;
 
 /**
- * This class store information about the user received from the application
- * client side.
- * 
  * @author Hervé Darritchon (@hervDarritchon)
  *
  */
-public class UserDto {
+public class UserDao {
 
 	private String id;
 
@@ -23,66 +20,49 @@ public class UserDto {
 	private String password;
 
 	/**
-	 * @param fullname
-	 * @param emailAddress
-	 * @param password
-	 */
-	public UserDto(final String fullname, final String emailAddress,
-			final String password) {
-		super();
-		this.fullName = fullname;
-		this.emailAddress = emailAddress;
-		this.password = password;
-	}
-
-	/**
 	 *
-	 */
-	public UserDto() {
-		super();
-	}
-
-	/**
-	 * Create a UserDTO from a User
-	 * 
 	 * @param user
 	 */
-	public UserDto(User user) {
-		super();
+	public UserDao(final User user) {
 		this.id = user.getId();
 		this.fullName = user.getFullName();
 		this.emailAddress = user.getEmailAddress();
-		this.password = user.getPassword();
+		this.password = this.getPassword();
 	}
-	
+
+	public User transformUserDaoToUser(final UserDao userDao) {
+		return new User(userDao.getId(), userDao.getFullName(),
+				userDao.getEmailAddress(), userDao.getPassword());
+	}
+
 	/**
 	 * @return the id
 	 */
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	/**
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
 	/**
-	 * @return the fullname
+	 * @return the fullName
 	 */
 	public String getFullName() {
 		return this.fullName;
 	}
 
 	/**
-	 * @param fullname
-	 *            the fullname to set
+	 * @param fullName
+	 *            the fullName to set
 	 */
-	public void setFullName(final String fullname) {
-		this.fullName = fullname;
+	public void setFullName(final String fullName) {
+		this.fullName = fullName;
 	}
 
 	/**
