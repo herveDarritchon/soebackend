@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package fr.hervedarritchon.soe.soebackend.api;
 
@@ -25,6 +25,7 @@ import fr.hervedarritchon.soe.soebackend.UserService;
 import fr.hervedarritchon.soe.soebackend.api.model.UserDto;
 import fr.hervedarritchon.soe.soebackend.exception.CannotCreateUserException;
 import fr.hervedarritchon.soe.soebackend.exception.InvalidParameterException;
+import fr.hervedarritchon.soe.soebackend.model.User;
 
 /**
  * @author ahdi7503
@@ -37,13 +38,13 @@ public class UserResource {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(UserResource.class);
 
-	private UserService userService;
+	private final UserService userService;
 
 	@Context
 	private UriInfo uriInfo;
 
 	@Autowired
-	public UserResource(UserService userService) {
+	public UserResource(final UserService userService) {
 		this.userService = userService;
 		LOGGER.info("UserResource() with {} as a UserService",
 				userService.toString());
@@ -59,13 +60,13 @@ public class UserResource {
 	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response signUp(UserDto userToCreate)
+	public Response signUp(final UserDto userToCreate)
 			throws InvalidParameterException, CannotCreateUserException {
 
-		userToCreate = userService.createUser(userToCreate);
+		final User userCreated = this.userService.createUser(userToCreate);
 
-		URI location = uriInfo.getAbsolutePathBuilder()
-				.path(userToCreate.getId()).build();
+		final URI location = this.uriInfo.getAbsolutePathBuilder()
+				.path(userCreated.getId()).build();
 
 		return Response.created(location).build();
 	}
@@ -78,17 +79,17 @@ public class UserResource {
 	 */
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN)
-	public String unsubscribe(UserDto toDeleteUser) {
+	public String unsubscribe(final UserDto toDeleteUser) {
 		return "Erf, you want to quit !";
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public String signIn(String idSignInUser) {
+	public String signIn(final String idSignInUser) {
 		return "Hey, Welcome back !";
 	}
 
@@ -100,7 +101,7 @@ public class UserResource {
 	 */
 	@PUT
 	@Produces(MediaType.TEXT_PLAIN)
-	public String updatePofile(UserDto updateUser) {
+	public String updatePofile(final UserDto updateUser) {
 		return "Hey, What's up !";
 	}
 

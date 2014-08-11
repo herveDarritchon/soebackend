@@ -34,34 +34,8 @@ public class UserService {
 		this.dao = dao;
 	}
 
-	// /**
-	// * Check that all the mandatory parameters passed are valid (not null and
-	// * not empty)
-	// *
-	// * @param fullName
-	// * @param emailAddress
-	// * @param password
-	// * @throws InvalidParameterException
-	// */
-	// public User checkUserValueAreValid(final UserDTO userToCheck)
-	// throws InvalidParameterException {
-	// if ((userToCheck.getFullName() == null)
-	// || userToCheck.getFullName().isEmpty()) {
-	// throw new InvalidParameterException("Fullname");
-	// }
-	// if ((userToCheck.getEmailAddress() == null)
-	// || userToCheck.getEmailAddress().isEmpty()) {
-	// throw new InvalidParameterException("EmailAdress");
-	// }
-	// if ((userToCheck.getPassword() == null)
-	// || userToCheck.getPassword().isEmpty()) {
-	// throw new InvalidParameterException("Password");
-	// }
-	// return new User(userToCheck);
-	// }
-
 	/**
-	 * Check the password of the user trying to authenticate against the ont
+	 * Check the password of the user trying to authenticate against the one
 	 * stored
 	 *
 	 * @param emailAddress
@@ -72,10 +46,6 @@ public class UserService {
 	 */
 	public User authenticateUserAgainstCredentials(final UserDto userDto)
 			throws AuthenticateUserException, InvalidParameterException {
-
-		// if (this.user != null) {
-		// throw new AuthenticateUserException("User already authenticated.");
-		// }
 
 		final User userRetreive = this.dao.getUserFromCredentials(new User(
 				userDto));
@@ -102,18 +72,7 @@ public class UserService {
 	public void updateUser(final UserDto userToUpdateDTO)
 			throws UpdateUserException, InvalidParameterException {
 
-		// if (this.user == null) {
-		// throw new UpdateUserException(
-		// "User not identified are not allowed to update User.");
-		// }
-
 		final User userToUpdate = new User(userToUpdateDTO);
-
-		// if (!userToUpdateDTO.getEmailAddress().equals(
-		// userToUpdate.getEmailAddress())) {
-		// throw new UpdateUserException(
-		// "User can't modify information about another User.");
-		// }
 
 		final User retreiveUser = this.dao.getUserFromCredentials(new User(
 				userToUpdateDTO));
@@ -135,12 +94,8 @@ public class UserService {
 	 * @throws InvalidParameterException
 	 * @throws CannotCreateUserException
 	 */
-	public UserDto createUser(final UserDto userToCreateDTO)
+	public User createUser(final UserDto userToCreateDTO)
 			throws InvalidParameterException, CannotCreateUserException {
-		// if (this.user != null) {
-		// throw new CannotCreateUserException(
-		// "User already connected and identify.");
-		// }
 
 		final User userToCreate = new User(userToCreateDTO);
 
@@ -152,17 +107,7 @@ public class UserService {
 
 		userToCreate.setId(this.dao.storeNewUser(userToCreate));
 
-		return this.userToUserDTO(userToCreate);
-	}
-
-	/**
-	 * Transform a User to a UserDTO
-	 *
-	 * @param userToCreate
-	 * @return
-	 */
-	private UserDto userToUserDTO(final User userToCreate) {
-		return new UserDto(userToCreate);
+		return userToCreate;
 	}
 
 	/**

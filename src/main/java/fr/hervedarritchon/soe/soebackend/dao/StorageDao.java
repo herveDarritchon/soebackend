@@ -74,9 +74,9 @@ public class StorageDao {
 				userDaoRetreived.getPassword());
 	}
 
-	public void updateUser(final User userToUpdate) {
+	public User updateUser(final User userToUpdate) {
 		final UserDao userDaoToUpdate = new UserDao(userToUpdate);
-		// userDaoToUpdate.setId(UUID.randomUUID().toString());
 		this.saveUser(userDaoToUpdate);
+		return this.getUserFromCredentials(userToUpdate);
 	}
 }
