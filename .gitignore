@@ -128,3 +128,8 @@ bin/
 # ##########################
 *.sublime-project
 *.sublime-workspace
+
+# ##########################
+# Ignore file - JRebel
+# ##########################
+rebel.xml

@@ -51,7 +51,7 @@ public class UserService {
 				userDto));
 
 		if ((userRetreive == null)
-				|| userRetreive.getPassword().equals(userDto.getPassword())) {
+				|| ! userRetreive.getPassword().equals(userDto.getPassword())) {
 			throw new AuthenticateUserException(
 					"User cannot be authenticated. Credentials are invalid.");
 		}

@@ -77,7 +77,7 @@ public class UserServiceTest {
 
 		final String generatedId = UUID.randomUUID().toString();
 		Mockito.when(this.mockedDao.storeNewUser(Mockito.any(User.class)))
-		.thenReturn(generatedId);
+				.thenReturn(generatedId);
 
 		final User createdUser = this.userService.createUser(STANDARD_USER);
 
@@ -181,13 +181,11 @@ public class UserServiceTest {
 				.thenReturn(
 						new User(USER_ID, FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
-		assertTrue(
-				"User is correctly authenticated",
-				this.userService
-				.authenticateUserAgainstCredentials(STANDARD_USER) != null);
+		User authenticatedUser = this.userService
+				.authenticateUserAgainstCredentials(STANDARD_USER);
 
-		Mockito.verify(this.mockedDao, Mockito.times(1))
-		.getUserFromCredentials(Mockito.any(User.class));
+		assertTrue("User is correctly authenticated", authenticatedUser != null);
+
 	}
 
 	@Test
@@ -202,28 +200,14 @@ public class UserServiceTest {
 		this.userService.updateUser(new UserDto("Leonard Cohen", EMAIL_ADDRESS,
 				"Partisan123"));
 
-		Mockito.verify(this.mockedDao, Mockito.times(1)).saveUser(
-				Mockito.any(UserDao.class));
+		Mockito.verify(this.mockedDao, Mockito.times(1)).updateUser(
+				Mockito.any(User.class));
 
 	}
 
 	@Test(expected = UpdateUserException.class)
 	public void should_throw_exception_when_guest_try_to_update_profile()
 			throws UpdateUserException, InvalidParameterException {
-
-		this.userService.updateUser(new UserDto("Leonard Cohen", EMAIL_ADDRESS,
-				"Partisan123"));
-
-	}
-
-	@Test(expected = UpdateUserException.class)
-	public void should_throw_exception_when_user_try_to_update_another_user()
-			throws UpdateUserException, InvalidParameterException {
-
-		Mockito.when(
-				this.mockedDao.getUserFromCredentials(Mockito.any(User.class)))
-				.thenReturn(
-						new User(USER_ID, FULL_NAME, EMAIL_ADDRESS, PASSWORD));
 
 		this.userService.updateUser(new UserDto("Leonard Cohen", EMAIL_ADDRESS,
 				"Partisan123"));
